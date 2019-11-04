@@ -3,7 +3,7 @@ $(document).ready(function() {
     var saldo;
     $('.sidenav').sidenav();
     google.charts.load('current', {
-        'packages': ['bar']
+        'packages': ['bar', 'line']
     });
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -30,8 +30,9 @@ function storeUser(userObject) {
 
 function buildHtml(snapshot) {
     var data = [['Monat', 'Gewinn', 'Verlust'],['Jan',0 , 0], ['Feb',0 , 0], ['Mar',0 , 0], ['Apr',0 , 0], ['Mai',0 , 0], ['Jun',0 , 0], ['Jul',0 , 0], ['Aug',0 , 0], ['Sep',0 , 0], ['Okt',0 , 0], ['Nov',0 , 0], ['Dez',0 , 0]];
+    var wettQuoten = [];
+    var wettEinsaetze = [];
     $('#table tbody').empty();
-    var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
     var t = "";
     var counter = 0;
     var saldo = 0;
@@ -41,6 +42,14 @@ function buildHtml(snapshot) {
         var dateArray = childSnapshot.val().date.split(" ");
         var tr = "<tr>";
         if (childSnapshot.val().type == "Wette") {
+            wettQuoten.push([childSnapshot.val().description, childSnapshot.val().quote]);
+            if(wettQuoten.length == 11){
+              wettQuoten.splice(0,1);
+            }
+            wettEinsaetze.push([childSnapshot.val().description, childSnapshot.val().einsatz]);
+            if(wettEinsaetze.length == 11){
+              wettEinsaetze.splice(0,1);
+            }
             tr += "<td><i class=\"material-icons\">ondemand_video</i></td>";
         } else if (childSnapshot.val().type == "Einzahlung") {
             tr += "<td><i class=\"material-icons\">attach_money</i></td>";
@@ -84,7 +93,7 @@ function buildHtml(snapshot) {
                 }
             }
         } else {
-            tr += "<td></td>";
+            tr += "<td><div style=\"height: 32.4px;\"></div></td>";
             if (childSnapshot.val().type == "Einzahlung") {
                 tr += "<td>+ " + childSnapshot.val().summe + " Fr.-</td>";
             } else {
@@ -96,8 +105,8 @@ function buildHtml(snapshot) {
         t = tr + t;
         counter = counter + 1;
     });
+    var chart = new google.charts.Bar(document.getElementById('win-loose-chart'));
     var dataGoogle = google.visualization.arrayToDataTable(data);
-
     var options = {
         chart: {
             title: 'Sportwettenverlauf',
@@ -105,6 +114,30 @@ function buildHtml(snapshot) {
         }
     };
     chart.draw(dataGoogle, google.charts.Bar.convertOptions(options));
+    chart = new google.charts.Line(document.getElementById('quote-chart'));
+    dataGoogle = new google.visualization.DataTable();
+    dataGoogle.addColumn('string', 'Beschreibung');
+    dataGoogle.addColumn('number', 'Quote');
+    dataGoogle.addRows(wettQuoten);
+    var options = {
+      chart: {
+          title: 'Quotenverlauf',
+          subtitle: 'Auflistung von den letzten 10 Quoten',
+      }
+    };
+    chart.draw(dataGoogle, google.charts.Line.convertOptions(options));
+    chart = new google.charts.Line(document.getElementById('einsatz-chart'));
+    dataGoogle = new google.visualization.DataTable();
+    dataGoogle.addColumn('string', 'Beschreibung');
+    dataGoogle.addColumn('number', 'Wetteinsatz');
+    dataGoogle.addRows(wettEinsaetze);
+    var options = {
+      chart: {
+          title: 'Wetteinsatzverlauf',
+          subtitle: 'Auflistung von den letzten 10 Wetteinsätzen',
+      }
+    };
+    chart.draw(dataGoogle, google.charts.Line.convertOptions(options));
     document.getElementById("table").innerHTML += t;
     $('#guthaben').text("Guthaben: " + saldo + " Fr.-");
     $('#guthabenMobile').text("Guthaben: " + saldo + " Fr.-")
