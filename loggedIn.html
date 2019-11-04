@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sportwettenüberwacher</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyCK3OepmrrQPtlzrXOV2UwmoBds120_MaY",
+            authDomain: "sportwettenueberwacher.firebaseapp.com",
+            databaseURL: "https://sportwettenueberwacher.firebaseio.com",
+            projectId: "sportwettenueberwacher",
+            storageBucket: "sportwettenueberwacher.appspot.com",
+            messagingSenderId: "713304611444"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="loggedIn.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="content" style="display: none;">
+        <nav>
+            <div class="nav-wrapper light-blue darken-1">
+                <a href="index.html" class="brand-logo center">Sportwettenüberwacher</a>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul id="nav-mobile" class="left hide-on-med-and-down">
+                    <li><span id="guthaben"></span></li>
+                </ul>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a onclick="logOut()"><i class="material-icons right">exit_to_app</i>Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+        <ul class="sidenav" id="mobile-demo">
+            <li><a id="guthabenMobile"><i class="material-icons right">exit_to_app</i></a></li>
+            <li><a onclick="logOut()"><i class="material-icons right">exit_to_app</i>Logout</a></li>
+        </ul>
+        <div class="container">
+            <div class="loading preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="notLoading">
+                <div class="row firstRow">
+                    <div class="input-field col s12 l6 padding-left-zero">
+                        <div class="card horizontal">
+                            <div class="card-content">
+                                <div class="input-field col s7 l6 xl8">
+                                    <input placeholder="2.1" id="summeEinzahlen" type="number" min="1" step=".05" value="5">
+                                    <label for="summeEinzahlen">Summe Einzahlen</label>
+                                </div>
+                                <div class="input-field col s5 l6 xl4">
+                                    <button onclick="summeEinzahlen()" class="waves-effect waves-light btn light-blue darken-1">Einzahlen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-field col s12 l6 padding-right-zero">
+                        <div class="card horizontal">
+                            <div class="card-content">
+                                <div class="input-field col s7 l7 xl8">
+                                    <input placeholder="2.1" id="summeAuszahlen" type="number" min="1" step=".05" value="5">
+                                    <label for="summeAuszahlen">Summe Auszahlen</label>
+                                </div>
+                                <div class="input-field col s5 l5 xl4">
+                                    <button onclick="summeAuszahlen()" class="waves-effect waves-light btn light-blue darken-1">Auszahlen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="card horizontal">
+                        <div class="card-content">
+                            <div class="input-field col s12 l4">
+                                <input placeholder="Lyon-Hoffenheim Champions League" id="description" type="text">
+                                <label for="description">Beschreibung der Wette</label>
+                            </div>
+                            <div class="input-field col s12 l3">
+                                <input placeholder="2.1" id="einsatz" type="number" min="1" step=".05" value="5">
+                                <label for="einsatz">Einsatz</label>
+                            </div>
+                            <div class="input-field col s12 l3">
+                                <input placeholder="2.1" id="quote" type="number" min="1" step=".01" value="1.5">
+                                <label for="quote">Quote</label>
+                            </div>
+                            <div class="input-field col s12 l2">
+                                <button onclick="writeTippEvent()" class="waves-effect waves-light btn light-blue darken-1">Wette platzieren</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="card horizontal">
+                        <div class="card-content">
+                            <div class="input-field col s12 l12">
+                                <div id="columnchart_material"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="card horizontal">
+                        <div class="card-content">
+                            <table id="table" class="responsive-table">
+                                <thead>
+                                    <tr>
+                                        <th>Art</th>
+                                        <th>Beschreibung</th>
+                                        <th>Einsatz</th>
+                                        <th>Quote</th>
+                                        <th>Datum</th>
+                                        <th>Ausgang</th>
+                                        <th>Auswirkung</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
