@@ -25,6 +25,14 @@
   margin-top: 30vh;
 }
 
+#span-quote-chart{
+  display: none;
+}
+
+#span-einsatz-chart{
+  display: none;
+}
+
 @media only screen and (max-width: 992px){
   .padding-left-zero{
   	padding-left: 0px !important;

@@ -106,6 +106,7 @@ function buildHtml(snapshot) {
         counter = counter + 1;
     });
     var chart = new google.charts.Bar(document.getElementById('win-loose-chart'));
+    console.log(data)
     var dataGoogle = google.visualization.arrayToDataTable(data);
     var options = {
         chart: {
@@ -114,30 +115,42 @@ function buildHtml(snapshot) {
         }
     };
     chart.draw(dataGoogle, google.charts.Bar.convertOptions(options));
-    chart = new google.charts.Line(document.getElementById('quote-chart'));
-    dataGoogle = new google.visualization.DataTable();
-    dataGoogle.addColumn('string', 'Beschreibung');
-    dataGoogle.addColumn('number', 'Quote');
-    dataGoogle.addRows(wettQuoten);
-    var options = {
-      chart: {
-          title: 'Quotenverlauf',
-          subtitle: 'Auflistung von den letzten 10 Quoten',
-      }
-    };
-    chart.draw(dataGoogle, google.charts.Line.convertOptions(options));
-    chart = new google.charts.Line(document.getElementById('einsatz-chart'));
-    dataGoogle = new google.visualization.DataTable();
-    dataGoogle.addColumn('string', 'Beschreibung');
-    dataGoogle.addColumn('number', 'Wetteinsatz');
-    dataGoogle.addRows(wettEinsaetze);
-    var options = {
-      chart: {
-          title: 'Wetteinsatzverlauf',
-          subtitle: 'Auflistung von den letzten 10 Wetteinsätzen',
-      }
-    };
-    chart.draw(dataGoogle, google.charts.Line.convertOptions(options));
+    if(wettQuoten.length > 1){
+      chart = new google.charts.Line(document.getElementById('quote-chart'));
+      dataGoogle = new google.visualization.DataTable();
+      dataGoogle.addColumn('string', 'Beschreibung');
+      dataGoogle.addColumn('number', 'Quote');
+      dataGoogle.addRows(wettQuoten);
+      var options = {
+        chart: {
+            title: 'Quotenverlauf',
+            subtitle: 'Auflistung von den letzten 10 Quoten',
+        }
+      };
+      chart.draw(dataGoogle, google.charts.Line.convertOptions(options));
+      document.getElementById("span-quote-chart").style.display = "none"
+    }
+    else{
+      document.getElementById("span-quote-chart").style.display = "block"
+    }
+    if(wettEinsaetze.length > 1){
+      chart = new google.charts.Line(document.getElementById('einsatz-chart'));
+      dataGoogle = new google.visualization.DataTable();
+      dataGoogle.addColumn('string', 'Beschreibung');
+      dataGoogle.addColumn('number', 'Wetteinsatz');
+      dataGoogle.addRows(wettEinsaetze);
+      var options = {
+        chart: {
+            title: 'Wetteinsatzverlauf',
+            subtitle: 'Auflistung von den letzten 10 Wetteinsätzen',
+        }
+      };
+      chart.draw(dataGoogle, google.charts.Line.convertOptions(options));
+      document.getElementById("span-einsatz-chart").style.display = "none"
+    }
+    else{
+      document.getElementById("span-einsatz-chart").style.display = "block"
+    }
     document.getElementById("table").innerHTML += t;
     $('#guthaben').text("Guthaben: " + saldo + " Fr.-");
     $('#guthabenMobile').text("Guthaben: " + saldo + " Fr.-")
