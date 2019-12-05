@@ -29,7 +29,7 @@ function storeUser(userObject) {
 }
 
 function buildHtml(snapshot) {
-    var data = [['Monat', 'Gewinn', 'Verlust'],['Jan',0 , 0], ['Feb',0 , 0], ['Mar',0 , 0], ['Apr',0 , 0], ['Mai',0 , 0], ['Jun',0 , 0], ['Jul',0 , 0], ['Aug',0 , 0], ['Sep',0 , 0], ['Okt',0 , 0], ['Nov',0 , 0], ['Dez',0 , 0]];
+    var data = [['Monat', 'Gewinn', 'Verlust'],['Jan',0 , 0], ['Feb',0 , 0], ['Mar',0 , 0], ['Apr',0 , 0], ['Mai',0 , 0], ['Jun',0 , 0], ['Jul',0 , 0], ['Aug',0 , 0], ['Sep',0 , 0], ['Okt',0 , 0], ['Nov',0 , 0], ['Dec',0 , 0]];
     var wettQuoten = [];
     var wettEinsaetze = [];
     $('#table tbody').empty();
